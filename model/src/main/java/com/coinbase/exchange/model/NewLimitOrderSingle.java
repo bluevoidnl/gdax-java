@@ -62,4 +62,12 @@ public class NewLimitOrderSingle extends NewOrderSingle {
         this.size = size;
     }
 
+    @Override
+    public String toString() {
+        return "NewLimitOrderSingle{" +
+                "size=" + size +
+                ", price=" + price +
+                ", post_only=" + post_only +" "+
+                super.toString()+'}';
+    }
 }
