@@ -8,20 +8,31 @@ import java.math.BigDecimal;
  * Created by irufus on 2/18/15.
  */
 public class AccountHistory {
-    private Integer id;
+    private Long id;
     private String created_at;
     private BigDecimal amount;
     private BigDecimal balance;
     private String type;
-    private Detail detail;
+    private Detail details;
+
+    @Override
+    public String toString() {
+        return "AccountHistory{" +
+                " type='" + type + '\'' +
+                ", at='" + created_at + '\'' +
+                ", amount=" + amount +
+                ", balance=" + balance +
+                ", details=" + details +
+                '}';
+    }
 
     public AccountHistory() {}
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -57,11 +68,11 @@ public class AccountHistory {
         this.type = type;
     }
 
-    public Detail getDetail() {
-        return detail;
+    public Detail getDetails() {
+        return details;
     }
 
-    public void setDetail(Detail detail) {
-        this.detail = detail;
+    public void setDetails(Detail detail) {
+        this.details = detail;
     }
 }

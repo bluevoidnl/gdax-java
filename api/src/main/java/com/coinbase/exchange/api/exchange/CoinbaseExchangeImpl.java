@@ -16,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 
@@ -53,9 +55,19 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
             ResponseEntity<T> responseEntity = restTemplate.exchange(getBaseUrl() + resourcePath,
                     HttpMethod.GET,
                     securityHeaders(resourcePath,
-                    "GET",
-                     ""),
+                            "GET",
+                            ""),
                     responseType);
+            if (log.isDebugEnabled()) {
+                HttpHeaders headers = responseEntity.getHeaders();
+                for (String key : headers.keySet()) {
+                    List<String> next = headers.get(key);
+                    log.debug(key + ":" + next);
+                }
+                T body=responseEntity.getBody();
+                return body;
+            }
+
             return responseEntity.getBody();
         } catch (HttpClientErrorException ex) {
             log.error("GET request Failed for '" + resourcePath + "': " + ex.getResponseBodyAsString());
@@ -65,16 +77,16 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
 
     @Override
     public <T> List<T> getAsList(String resourcePath, ParameterizedTypeReference<T[]> responseType) {
-       T[] result = get(resourcePath, responseType);
+        T[] result = get(resourcePath, responseType);
 
-       return result == null ? emptyList() : Arrays.asList(result);
+        return result == null ? emptyList() : Arrays.asList(result);
     }
 
     @Override
     public <T> T pagedGet(String resourcePath,
                           ParameterizedTypeReference<T> responseType,
                           String beforeOrAfter,
-                          Integer pageNumber,
+                          Long pageNumber,
                           Integer limit) {
         resourcePath += "?" + beforeOrAfter + "=" + pageNumber + "&limit=" + limit;
         return get(resourcePath, responseType);
@@ -82,11 +94,11 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
 
     @Override
     public <T> List<T> pagedGetAsList(String resourcePath,
-                          ParameterizedTypeReference<T[]> responseType,
-                          String beforeOrAfter,
-                          Integer pageNumber,
-                          Integer limit) {
-        T[] result = pagedGet(resourcePath, responseType, beforeOrAfter, pageNumber, limit );
+                                      ParameterizedTypeReference<T[]> responseType,
+                                      String beforeOrAfter,
+                                      Long pageNumber,
+                                      Integer limit) {
+        T[] result = pagedGet(resourcePath, responseType, beforeOrAfter, pageNumber, limit);
         return result == null ? emptyList() : Arrays.asList(result);
     }
 
@@ -94,9 +106,9 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
     public <T> T delete(String resourcePath, ParameterizedTypeReference<T> responseType) {
         try {
             ResponseEntity<T> response = restTemplate.exchange(getBaseUrl() + resourcePath,
-                HttpMethod.DELETE,
-                securityHeaders(resourcePath, "DELETE", ""),
-                responseType);
+                    HttpMethod.DELETE,
+                    securityHeaders(resourcePath, "DELETE", ""),
+                    responseType);
             return response.getBody();
         } catch (HttpClientErrorException ex) {
             log.error("DELETE request Failed for '" + resourcePath + "': " + ex.getResponseBodyAsString());
@@ -105,7 +117,7 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
     }
 
     @Override
-    public <T, R> T post(String resourcePath,  ParameterizedTypeReference<T> responseType, R jsonObj) {
+    public <T, R> T post(String resourcePath, ParameterizedTypeReference<T> responseType, R jsonObj) {
         String jsonBody = toJson(jsonObj);
 
         try {
@@ -152,10 +164,10 @@ public class CoinbaseExchangeImpl implements CoinbaseExchange {
      */
     private void curlRequest(String method, String jsonBody, HttpHeaders headers, String resource) {
         String curlTest = "curl ";
-        for (String key : headers.keySet()){
-            curlTest +=  "-H '" + key + ":" + headers.get(key).get(0) + "' ";
+        for (String key : headers.keySet()) {
+            curlTest += "-H '" + key + ":" + headers.get(key).get(0) + "' ";
         }
-        if (jsonBody!=null && !jsonBody.equals(""))
+        if (jsonBody != null && !jsonBody.equals(""))
             curlTest += "-d '" + jsonBody + "' ";
 
         curlTest += "-X " + method + " " + getBaseUrl() + resource;

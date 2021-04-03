@@ -34,7 +34,7 @@ public class AccountService {
 
     public List<AccountHistory> getPagedAccountHistory(String accountId,
                                                        String beforeOrAfter,
-                                                       Integer pageNumber,
+                                                       Long pageNumber,
                                                        Integer limit) {
 
         String accountHistoryEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + "/ledger";
@@ -52,7 +52,7 @@ public class AccountService {
 
     public List<Hold> getPagedHolds(String accountId,
                                     String beforeOrAfter,
-                                    Integer pageNumber,
+                                    Long pageNumber,
                                     Integer limit) {
         String holdsEndpoint = ACCOUNTS_ENDPOINT + "/" + accountId + "/holds";
         return exchange.pagedGetAsList(holdsEndpoint,

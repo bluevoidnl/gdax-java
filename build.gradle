@@ -41,8 +41,8 @@ subprojects { }
 // apply dependency constraints to all java modules
 configure(subprojects.findAll { true }) {
 
-    sourceCompatibility = 1.11
-    targetCompatibility = 1.11
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
     dependencies {
         constraints {
